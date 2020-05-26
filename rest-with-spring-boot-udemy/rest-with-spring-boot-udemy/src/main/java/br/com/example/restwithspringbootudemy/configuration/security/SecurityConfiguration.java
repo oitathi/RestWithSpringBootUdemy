@@ -12,13 +12,22 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import br.com.example.restwithspringbootudemy.service.UserService;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-	private AuthenticationService service;
+	private AuthenticationService authService;
+	
+	@Autowired
+	private TokenService tokenService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Override
 	@Bean
@@ -29,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	//Authentication
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(service).passwordEncoder(new BCryptPasswordEncoder());
+		auth.userDetailsService(authService).passwordEncoder(new BCryptPasswordEncoder());
 	}
 	
 	//Authorization
@@ -41,7 +50,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
 		.anyRequest().authenticated()
 		.and().csrf().disable()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.and().addFilterBefore(new TokenFilter(tokenService, userService), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	//Statics Resources 

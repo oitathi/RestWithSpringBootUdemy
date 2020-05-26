@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.example.restwithspringbootudemy.configuration.security.TokenService;
 import br.com.example.restwithspringbootudemy.form.LoginForm;
+import br.com.example.restwithspringbootudemy.form.TokenForm;
 
 
 @RestController
@@ -28,13 +29,12 @@ public class AuthenticationController {
 	private TokenService tokenService;
 	
 	@PostMapping
-	public ResponseEntity<?> authenticate(@RequestBody @Valid LoginForm form ){
+	public ResponseEntity<TokenForm> authenticate(@RequestBody @Valid LoginForm form ){
 		UsernamePasswordAuthenticationToken login = form.convert();
 		try {
 			Authentication authentication = authManager.authenticate(login);
 			String token = tokenService.generateToken(authentication);
-			System.out.println(token);
-			return ResponseEntity.ok().build();		
+			return ResponseEntity.ok(new TokenForm(token,"Bearer"));		
 		}catch (AuthenticationException e) {
 			return ResponseEntity.badRequest().build();	
 		}

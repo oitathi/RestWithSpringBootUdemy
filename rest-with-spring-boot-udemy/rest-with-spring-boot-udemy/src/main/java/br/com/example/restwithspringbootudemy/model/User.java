@@ -1,12 +1,15 @@
 package br.com.example.restwithspringbootudemy.model;
 
 import java.util.Collection;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -24,6 +27,9 @@ public class User implements UserDetails{
 	private String password;
 	
 	private String email;
+	
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
+	private Set<Profile> profiles;
 
 	public User() {
 		
@@ -56,18 +62,16 @@ public class User implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.profiles;
 	}
 
 	@Override
 	public String getUsername() {
-		return email;
+		return this.email;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -78,13 +82,11 @@ public class User implements UserDetails{
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	
