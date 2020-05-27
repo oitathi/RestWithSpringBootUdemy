@@ -45,8 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		.antMatchers(HttpMethod.GET,"/greeting").permitAll()
-		.antMatchers(HttpMethod.GET, "/greeting/*").permitAll()
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
 		.anyRequest().authenticated()
 		.and().csrf().disable()
@@ -56,6 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	//Statics Resources 
 	public void configure(WebSecurity web) throws Exception {
+		//alows swagger in spring security
+		web.ignoring().antMatchers("/**.html","/v2/api-docs","/webjars/**","/configuration/**","/swagger-resources/**");
 	}
 	
 	
