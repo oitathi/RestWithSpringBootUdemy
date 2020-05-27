@@ -34,6 +34,14 @@ public class GreetingService {
 		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for this id"));
 	}
 	
+	public List<Greeting> findByContent(String content) {
+		return repository.findByContent(content);
+	}
+	
+	public List<Greeting> findByIdiom(String idiom){
+		return repository.findByLanguageIdiom(idiom);
+	}
+	
 	public List<Greeting> findAll(){
 		return repository.findAll();
 	}

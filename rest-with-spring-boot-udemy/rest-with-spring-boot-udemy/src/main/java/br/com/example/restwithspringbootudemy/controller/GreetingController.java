@@ -1,15 +1,20 @@
 package br.com.example.restwithspringbootudemy.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.example.restwithspringbootudemy.dto.GreetingDto;
 import br.com.example.restwithspringbootudemy.model.Greeting;
 import br.com.example.restwithspringbootudemy.service.GreetingService;
 
@@ -20,10 +25,25 @@ public class GreetingController {
 	@Autowired
 	private GreetingService service;
 	
+	@Autowired
+    private ModelMapper modelMapper;
 		
 	@RequestMapping(method = RequestMethod.GET, produces =  MediaType.APPLICATION_JSON_VALUE)
-	public List<Greeting> findAll(){
-		return service.findAll();
+	public List<GreetingDto> find(@RequestParam Map<String,String> filter){
+		List<Greeting> greetings;
+		if(!filter.isEmpty()) {
+			if(filter.containsKey("content")) {
+				greetings = service.findByContent(filter.get("content"));
+			}else {
+				greetings = service.findByIdiom(filter.get("idiom"));
+			}
+		}else {
+			greetings = service.findAll();
+		}
+		
+		return greetings.stream()
+		          .map(this::convertToDto)
+		          .collect(Collectors.toList());
 	}
 	
 	@RequestMapping( value = "/{id}",method = RequestMethod.GET, produces =  MediaType.APPLICATION_JSON_VALUE)
@@ -44,6 +64,10 @@ public class GreetingController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void delete(@PathVariable("id") long id){
 		service.delete(id);
+	}
+	
+	private GreetingDto convertToDto(Greeting greeting) {
+		return modelMapper.map(greeting, GreetingDto.class);
 	}
 	
 }

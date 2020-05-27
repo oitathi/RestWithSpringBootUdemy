@@ -2,9 +2,12 @@ package br.com.example.restwithspringbootudemy.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -17,6 +20,10 @@ public class Greeting {
 	private long id;
 	
 	private String content;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "language_id", nullable = false)
+	private Language language;
 	
 	public Greeting() {
 	}
@@ -37,6 +44,14 @@ public class Greeting {
 	}
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 	
 	

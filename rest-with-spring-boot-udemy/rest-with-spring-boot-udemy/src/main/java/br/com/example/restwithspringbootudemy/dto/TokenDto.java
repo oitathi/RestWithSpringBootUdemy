@@ -1,11 +1,11 @@
-package br.com.example.restwithspringbootudemy.form;
+package br.com.example.restwithspringbootudemy.dto;
 
-public class TokenForm {
+public class TokenDto {
 
 	private String token;
 	private String type;
 
-	public TokenForm(String token, String type) {
+	public TokenDto(String token, String type) {
 		this.token = token;
 		this.type = type;
 	}

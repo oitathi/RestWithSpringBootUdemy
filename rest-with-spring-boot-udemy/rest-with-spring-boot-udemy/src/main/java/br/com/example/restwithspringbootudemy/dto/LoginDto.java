@@ -1,8 +1,8 @@
-package br.com.example.restwithspringbootudemy.form;
+package br.com.example.restwithspringbootudemy.dto;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-public class LoginForm {
+public class LoginDto {
 	
 	private String email;
 	private String password;
