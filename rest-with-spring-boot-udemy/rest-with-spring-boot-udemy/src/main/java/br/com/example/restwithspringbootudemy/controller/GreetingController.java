@@ -1,11 +1,12 @@
 package br.com.example.restwithspringbootudemy.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,31 +26,34 @@ public class GreetingController {
 	@Autowired
 	private GreetingService service;
 	
-	@Autowired
-    private ModelMapper modelMapper;
-		
 	@RequestMapping(method = RequestMethod.GET, produces =  MediaType.APPLICATION_JSON_VALUE)
-	public List<GreetingDto> find(@RequestParam Map<String,String> filter){
-		List<Greeting> greetings;
+	public Page<GreetingDto> find(@RequestParam(required = false) Map<String,String> filter,@RequestParam(required = true) int page,@RequestParam(required = true) int size, @RequestParam(required = true) String sort){
+		
+		Pageable pageable = PageRequest.of(page, size, Direction.ASC, sort);
+		Page<Greeting> greetings;
+			
+		filter.remove("page");
+		filter.remove("size");
+		filter.remove("sort");
+				
 		if(!filter.isEmpty()) {
 			if(filter.containsKey("content")) {
-				greetings = service.findByContent(filter.get("content"));
+				greetings = service.findByContent(filter.get("content"), pageable);
 			}else {
-				greetings = service.findByIdiom(filter.get("idiom"));
+				greetings = service.findByIdiom(filter.get("idiom"), pageable);
 			}
 		}else {
-			greetings = service.findAll();
+			greetings = service.findAll(pageable);
 		}
 		
-		return greetings.stream()
-		          .map(this::convertToDto)
-		          .collect(Collectors.toList());
+		return GreetingDto.convert(greetings);
 	}
 	
 	@RequestMapping( value = "/{id}",method = RequestMethod.GET, produces =  MediaType.APPLICATION_JSON_VALUE)
 	public Greeting findById(@PathVariable("id") long id){
 		return service.findById(id);
 	}
+	
 	
 	@RequestMapping( method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces =  MediaType.APPLICATION_JSON_VALUE)
 	public Greeting create(@RequestBody Greeting greeting){
@@ -66,8 +70,6 @@ public class GreetingController {
 		service.delete(id);
 	}
 	
-	private GreetingDto convertToDto(Greeting greeting) {
-		return modelMapper.map(greeting, GreetingDto.class);
-	}
-	
+		
+		
 }

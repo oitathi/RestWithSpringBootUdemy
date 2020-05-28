@@ -3,6 +3,8 @@ package br.com.example.restwithspringbootudemy.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.example.restwithspringbootudemy.exception.ResourceNotFoundException;
@@ -38,12 +40,24 @@ public class GreetingService {
 		return repository.findByContent(content);
 	}
 	
+	public Page<Greeting> findByContent(String content, Pageable pageable) {
+		return repository.findByContent(content, pageable);
+	}
+	
 	public List<Greeting> findByIdiom(String idiom){
 		return repository.findByLanguageIdiom(idiom);
 	}
 	
+	public Page<Greeting> findByIdiom(String idiom, Pageable pageable){
+		return repository.findByLanguageIdiom(idiom, pageable);
+	}
+	
 	public List<Greeting> findAll(){
 		return repository.findAll();
+	}
+	
+	public Page<Greeting> findAll(Pageable pageable){
+		return repository.findAll(pageable);
 	}
 
 }
